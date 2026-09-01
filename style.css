@@ -1,0 +1,211 @@
+/* 落語ログ ------------------------------------------------------------
+   白地に朱の差し色ひとつ。線と余白で情報を整理する。
+   装飾は最小限にして、演目名が主役になるようにする。
+   記録が数百件になっても破綻しないことを優先する。
+
+   ・背景に色帯やヘッダー画像を敷かない
+   ・カードに影をつけない
+   ・角丸は控えめ（8〜12px）
+   ・朱以外の差し色を増やさない（印象タグの6色だけが例外）
+   色の値は決め打ち。増やすときは CLAUDE.md の「配色」を先に読むこと。   */
+
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* 端末が夜間モードでも白地のまま出す。入力欄が勝手に黒くならないようにする */
+  color-scheme:light;
+
+  --bg:#FFFFFF;
+  --line:#E8E6E1;       /* 外枠（入力欄・囲み） */
+  --line-row:#F2F0EC;   /* 一覧の行間 */
+  --line-head:#EDEBE6;  /* 見出しの下・記録をぶら下げる縦線 */
+  --text:#1C1B19;       /* 本文 */
+  --text2:#443F3A;      /* あらすじ・メモ */
+  --muted:#8E8B84;      /* 演者名・日付など補助 */
+  --faint:#B5B1A9;      /* 件数などさらに薄い文字 */
+  --acc:#D93A2B;        /* 差し色（朱） */
+  --acc-soft:#FBEDEB;   /* 朱の薄い面。選択中の視聴方法にだけ使う */
+  --star:#D99A20;
+}
+
+/* 印象タグの6色。TAGS の並び順と対応している（t0=笑える 〜 t5=眠くなった）。
+   チップ・入力画面の選択中・集計の棒で同じ色を使い、アプリ全体で揃える */
+.t0{--tb:#FAEEDA;--tf:#854F0B}   /* 笑える */
+.t1{--tb:#E6F1FB;--tf:#185FA5}   /* しんみり */
+.t2{--tb:#EEEDFE;--tf:#534AB7}   /* こわい */
+.t3{--tb:#E1F5EE;--tf:#0F6E56}   /* お見事 */
+.t4{--tb:#EAF3DE;--tf:#3B6D11}   /* バカバカしい */
+.t5{--tb:#F1EFE8;--tf:#5F5E5A}   /* 眠くなった */
+
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font-size:14px;line-height:1.7;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",
+    "Noto Sans JP",Meiryo,sans-serif;
+  -webkit-tap-highlight-color:transparent}
+.wrap{max-width:720px;margin:0 auto;padding:0 14px 72px}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+
+/* ---------------- 見出しとタブ ---------------- */
+header{padding:22px 0 12px}
+h1{font-size:19px;font-weight:700;letter-spacing:.02em;line-height:1.4}
+h1 a{color:inherit;text-decoration:none}
+.stamp{font-size:11px;color:var(--faint);margin-top:3px;letter-spacing:.02em}
+
+/* 下線タイプ。背景は塗らない */
+.nav{display:flex;gap:22px;position:sticky;top:0;z-index:5;
+  background:var(--bg);border-bottom:1px solid var(--line-head)}
+.nav a{font-size:14px;font-weight:600;color:var(--muted);text-decoration:none;
+  padding:9px 0 8px;border-bottom:2px solid transparent;margin-bottom:-1px}
+.nav a.on{color:var(--acc);border-bottom-color:var(--acc)}
+
+/* タブの下の数字3つ。カードで囲まず、テキストだけで置く */
+.nums{display:grid;grid-template-columns:1fr 1fr 1.5fr;gap:10px;
+  padding:16px 0 18px}
+.nums.four{grid-template-columns:repeat(4,1fr)}
+.num span{display:block;font-size:11px;color:var(--muted);letter-spacing:.04em}
+.num b{display:block;font-size:22px;font-weight:700;line-height:1.25;
+  margin-top:2px;letter-spacing:-.01em}
+.num.acc b{color:var(--acc)}
+
+/* 一覧の中の「演目で見る／演者で見る」。上のタブと張り合わないよう小さく */
+.segs{display:flex;gap:20px;padding-bottom:10px}
+.segs button{font-size:13px;color:var(--muted);padding:4px 0}
+.segs button.on{color:var(--acc);font-weight:700}
+
+/* ---------------- 一覧 ---------------- */
+.rows{border-top:1px solid var(--line-row)}
+.row{display:flex;gap:11px;align-items:center;text-decoration:none;color:inherit;
+  border-left:3px solid var(--acc);border-bottom:1px solid var(--line-row);
+  padding:13px 2px 13px 11px}
+.row:active{background:var(--line-row)}
+.rthumb{flex:0 0 38px;width:38px;height:38px;border-radius:50%;object-fit:cover;
+  display:block;background:var(--line-row)}
+.rph{flex:0 0 38px;width:38px;height:38px;border-radius:50%;background:var(--line-row);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:600;color:var(--faint)}
+.rtext{min-width:0;flex:1}
+.rtitle{font-size:16px;font-weight:600;line-height:1.45}
+.rmeta{margin-top:1px;font-size:12px;color:var(--muted);line-height:1.5;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cnt{flex:0 0 auto;font-size:12px;color:var(--faint);
+  font-variant-numeric:tabular-nums}
+.empty{padding:22px 2px;font-size:13px;color:var(--muted);line-height:1.8}
+
+/* ---------------- 詳細 ---------------- */
+.back{display:inline-block;font-size:12px;color:var(--muted);text-decoration:none;
+  padding:14px 0 4px}
+.dtitle{font-size:20px;font-weight:700;line-height:1.45;
+  border-left:3px solid var(--acc);padding-left:11px;margin:8px 0 6px}
+.dsub{font-size:11px;color:var(--faint);padding-left:14px}
+.summary{font-size:13px;line-height:1.7;color:var(--text2);
+  white-space:pre-wrap;margin-top:12px}
+.photo{width:76px;height:76px;border-radius:50%;object-fit:cover;
+  background:var(--line-row);display:block;margin:12px 0 4px}
+
+.pgroup{margin-top:26px}
+.pname{font-size:13px;font-weight:600;color:var(--acc);
+  display:flex;align-items:baseline;gap:8px}
+.pname a{color:inherit;text-decoration:none}
+.pname .count{font-size:11px;font-weight:400;color:var(--faint)}
+/* 演者名の下に薄い縦線を引き、聴いた回をぶら下げる */
+.plogs{border-left:2px solid var(--line-head);margin-top:6px;padding-left:14px}
+.log{padding:10px 0}
+.log + .log{border-top:1px solid var(--line-row)}
+.logtop{display:flex;align-items:baseline;gap:9px}
+.logdate{font-size:13px;font-weight:600}
+.logway{font-size:11px;color:var(--muted)}
+.rate{margin-left:auto;flex:0 0 auto;font-size:12px;color:var(--star);
+  letter-spacing:.06em;white-space:nowrap}
+.rate .off{color:var(--line)}
+.rate.none{color:var(--faint);letter-spacing:0}
+.logmemo{font-size:13px;line-height:1.7;color:var(--text2);
+  white-space:pre-wrap;margin-top:5px}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.tag{font-size:11px;font-weight:600;line-height:1.9;padding:0 8px;border-radius:9px;
+  background:var(--tb);color:var(--tf)}
+.acts{display:flex;gap:14px;margin-top:8px}
+.acts button{font-size:11px;color:var(--muted);padding:2px 0}
+.acts button.danger{color:var(--acc)}
+
+/* ---------------- 入力 ---------------- */
+h2.sec{font-size:13px;font-weight:700;letter-spacing:.04em;
+  padding:0 0 7px;margin:24px 0 0;border-bottom:1px solid var(--line-head)}
+h2.sec .count{font-size:11px;font-weight:400;color:var(--faint);margin-left:8px}
+.field{margin-top:18px}
+.field>label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}
+.field .opt{font-weight:400;color:var(--muted);margin-left:6px}
+input[type=text],input[type=date],textarea{
+  width:100%;padding:10px 11px;font-size:15px;border-radius:8px;
+  border:1px solid var(--line);background:var(--bg)}
+textarea{resize:vertical;min-height:74px;font-size:14px;line-height:1.7}
+.hint{font-size:11px;margin-top:6px;color:var(--muted)}
+.hint.new,.hint.dup{color:var(--acc);font-weight:600}
+.note{font-size:11px;color:var(--muted);margin-top:7px;line-height:1.6}
+
+.pills{display:flex;flex-wrap:wrap;gap:7px}
+.pills button{font-size:13px;padding:7px 12px;border-radius:8px;
+  border:1px solid var(--line);color:var(--text)}
+.pills button.on{border-color:var(--acc);background:var(--acc-soft);
+  color:var(--acc);font-weight:700}
+/* 印象タグは3列×2行。選ぶとそのタグ自身の色になる */
+.taggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.taggrid button{font-size:13px;padding:10px 2px;border-radius:8px;
+  border:1px solid var(--line)}
+.taggrid button.on{background:var(--tb);color:var(--tf);border-color:var(--tf)}
+/* 3つ選んだあと、4つ目は押しても何も起きない。それが見て分かるように薄くする */
+.taggrid button.locked{opacity:.35}
+.starpick{display:flex;gap:2px}
+.starpick button{font-size:26px;line-height:1.2;color:var(--line);padding:0 4px}
+.starpick button.on{color:var(--star)}
+
+.primary{display:block;width:100%;text-align:center;font-size:15px;font-weight:700;
+  padding:13px;border-radius:8px;background:var(--acc);color:#fff;margin-top:24px}
+.ghost{display:block;width:100%;text-align:center;font-size:13px;
+  padding:11px;border-radius:8px;background:var(--bg);color:var(--muted);
+  border:1px solid var(--line);margin-top:9px}
+.ghost.danger{color:var(--acc)}
+
+/* 演目ページ・演者ページの編集欄。開いたときだけ出る */
+.card{border:1px solid var(--line);border-radius:10px;padding:4px 13px 14px;
+  margin-top:14px}
+
+/* 記録の編集で名前を書き換えたとき、「名前を直したい」のか
+   「別の演目・演者に分けたい」のかを聞く欄。見落とすと困るので朱の枠にする */
+.ask{border:1px solid var(--acc);border-radius:10px;padding:14px 13px;margin-top:22px}
+.askq{font-size:13px;font-weight:700;color:var(--acc)}
+.askd{font-size:14px;font-weight:600;margin-top:5px}
+.askn{font-size:11px;color:var(--muted);margin-top:2px}
+.askbtn{display:block;width:100%;text-align:left;font-size:14px;font-weight:700;
+  padding:11px 12px;border-radius:8px;border:1px solid var(--line);
+  margin-top:9px;line-height:1.5}
+.askbtn span{display:block;font-size:11px;font-weight:400;color:var(--muted);
+  margin-top:2px;line-height:1.6}
+.ask .ghost{margin-top:9px}
+
+/* 保存できない端末で出す帯 */
+.warn{border:1px solid var(--acc);border-radius:10px;padding:11px 12px;
+  margin-top:12px;font-size:12px;color:var(--acc);line-height:1.6}
+
+/* ---------------- 集計 ---------------- */
+/* 棒は1系列＝単色（朱）。印象タグのところだけタグ自身の色にする。
+   数値を必ず横に添えるので、色が読めなくても値は分かる */
+.brow{margin-top:14px}
+.brow:first-child{margin-top:0}
+.bhead{display:flex;align-items:baseline;gap:10px;font-size:13px}
+.blab{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bval{flex:0 0 auto;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.btrack{height:4px;border-radius:2px;background:var(--line-row);margin-top:5px}
+.bfill{height:100%;border-radius:2px;background:var(--acc)}
+.bfill.tagbar{background:var(--tf)}
+.bars{padding:16px 0 4px}
+/* 月別。値が1〜2桁にしかならないので、棒の上に数字を出しても混まない */
+.months{display:flex;align-items:flex-end;gap:4px;padding:16px 0 0}
+.mcol{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px}
+.mval{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums;height:1.2em}
+.mbarbox{width:100%;height:84px;display:flex;align-items:flex-end}
+.mbar{width:100%;border-radius:2px 2px 0 0;background:var(--acc);min-height:2px}
+.mbar.zero{background:var(--line-row)}
+.mlab{font-size:10px;color:var(--faint)}
+.cap{font-size:11px;color:var(--faint);margin-top:10px;text-align:center}

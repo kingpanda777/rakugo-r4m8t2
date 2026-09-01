@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#FFFFFF">
+<title>落語ログ</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><a href="#/">落語ログ</a></h1>
+    <div class="stamp" id="stamp"></div>
+  </header>
+
+  <nav class="nav">
+    <a href="#/" data-nav="list">一覧</a>
+    <a href="#/new" data-nav="new">記録する</a>
+    <a href="#/stats" data-nav="stats">集計</a>
+  </nav>
+
+  <!-- localStorage が使えない端末（プライベートブラウズなど）で出す -->
+  <div class="warn" id="storage-warn" hidden>
+    この端末では記録を保存できません。入力はできますが、画面を閉じると消えます。
+  </div>
+
+  <main id="app"></main>
+</div>
+
+<!-- 入力画面のオートコンプリート候補。app.js が中身を入れる -->
+<datalist id="dl-works"></datalist>
+<datalist id="dl-names"></datalist>
+<datalist id="dl-gens"></datalist>
+
+<script src="app.js"></script>
+</body>
+</html>
