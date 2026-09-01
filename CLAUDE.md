@@ -77,6 +77,43 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 詳細：戻る12px／演目名20px（左に3pxの朱）／あらすじ13px・行間1.7／演者名13px朱。
 演者名の下に2pxの `--line-head` の縦線を引き、そこに聴取記録をぶら下げる。
 
+## 公開先（2026-09-01 に公開）
+
+| | |
+|---|---|
+| 公開 URL | https://kingpanda777.github.io/rakugo-r4m8t2/ |
+| GitHub | `kingpanda777/rakugo-r4m8t2` |
+| 公開設定 | **Public** |
+| Pages の設定 | `main` ブランチの `/`（ルート） |
+
+**このリポジトリ1つで完結する。** ニュースダイジェストは
+「ソース用（Private）＋公開用（Public）」の2リポジトリだが、あちらは Python が
+HTML を生成するため中身が別物なだけ。落語ログは**ファイルがそのまま公開ページ**なので
+分ける理由が無い。
+
+**Public にしたのは、GitHub Pages が無料プランでは Public リポジトリからしか
+公開できないため。** 有料プラン（Pro）で Private から公開しても、できあがった
+ページ自体は URL を知っていれば誰でも見られる（アクセス制限は Enterprise 限定）ので、
+Private にする実利が無い。ニュースダイジェストのときと同じ結論。
+
+**公開しても利用者の記録は外に出ない。** 記録も写真も localStorage の中だけにあり、
+リポジトリにはプログラムのファイルしか無い。他人が URL を開くと空のアプリが出る。
+**この前提を壊す変更（記録をファイルに書き出してコミットする等）をしないこと。**
+
+### 直したものを公開に反映する
+
+`git push` するだけ。1〜2分で公開ページに反映される。
+
+```
+cd C:\Users\merle\rakugo-log
+git add -A
+git commit -m "なにを直したか"
+git push
+```
+
+認証は Windows の資格情報マネージャーに入っているものを git が自動で使う。
+ログイン操作は要らない（ニュースダイジェストの毎朝の push と同じ資格情報）。
+
 ## ファイル構成
 
 | ファイル | 中身 |
